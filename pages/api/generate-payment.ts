@@ -10,11 +10,12 @@ interface VARIANTS_PRICES {
 }
 
 const VARIANTS_PRICES: VARIANTS_PRICES = {
-  100: "price_1NvkX0ISNkMO2d65avhfo0dn",
-  200: "price_1NvkX0ISNkMO2d65avhfo0dn",
-  300: "price_1NvkX0ISNkMO2d65avhfo0dn",
-  400: "price_1NvkX0ISNkMO2d65avhfo0dn",
-  500: "price_1NvkX0ISNkMO2d65avhfo0dn",
+  100: "price_1NwNEdHhE1I6QTRHeE6E1Yho",
+  150: "price_1NwNFEHhE1I6QTRHrxXmERvU",
+  200: "price_1NwNFVHhE1I6QTRHIXwSIQkJ",
+  300: "price_1NwNFkHhE1I6QTRHsQXXFsRh",
+  500: "price_1NwNG0HhE1I6QTRHZyhzmADn",
+  1000: "price_1NwNGJHhE1I6QTRHWBze6pzC",
 };
 
 interface PaymentRequestBody {
