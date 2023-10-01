@@ -26,6 +26,10 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  if (req.method == "OPTIONS") {
+    res.setHeader("Allow", "POST");
+    return res.status(202).json({});
+  }
 
   const data = req.body as PaymentRequestBody;
 
