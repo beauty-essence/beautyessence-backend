@@ -51,7 +51,7 @@ export default async function handler(
     after_completion: {
       type: "redirect",
       redirect: {
-        url: "https://beauty-essence.pl/",
+        url: "https://beauty-essence.pl/voucher/",
       },
     },
     custom_fields: [
