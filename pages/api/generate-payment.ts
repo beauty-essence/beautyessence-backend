@@ -10,8 +10,7 @@ interface VARIANTS_PRICES {
 }
 
 const VARIANTS_PRICES: VARIANTS_PRICES = {
-  // 100: "price_1NwNEdHhE1I6QTRHeE6E1Yho",
-  100: "price_1NuI0qHhE1I6QTRHEsqusuTB", // This is a test price
+  100: "price_1NwNEdHhE1I6QTRHeE6E1Yho",
   150: "price_1NwNFEHhE1I6QTRHrxXmERvU",
   200: "price_1NwNFVHhE1I6QTRHIXwSIQkJ",
   300: "price_1NwNFkHhE1I6QTRHsQXXFsRh",
