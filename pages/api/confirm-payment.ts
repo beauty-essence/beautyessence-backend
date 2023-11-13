@@ -61,7 +61,8 @@ try {
   const message = await emailjs.send(`${process.env.EMAIL_SERVICE_ID}`, `${process.env.EMAIL_TEMPLATE_ID}`, {
     voucherName: voucherName,
     variant: variant,
-    buyer_name: customerEmail
+    customerEmail: customerEmail,
+    voucherEmail: voucherEmail,
   }).then(function(response) {
     console.log('SUCCESS!', response.status, response.text);
  }, function(error) {
