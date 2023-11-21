@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_KEY as string, {
+const stripe = new Stripe("sk_test_51NtSzoHhE1I6QTRHmkgkPUPz172e8GvajVFvVQ9KvGTn93POKcBM9QcYn6esk6maIiGeggDAtoLjm7cPgtUvWHTd00KcHgghOn" as string, {
   apiVersion: "2023-08-16",
 });
 
@@ -10,8 +10,7 @@ interface VARIANTS_PRICES {
 }
 // 100: "price_1NuI0qHhE1I6QTRHEsqusuTB", // This is a test price
 const VARIANTS_PRICES: VARIANTS_PRICES = {
-  100: "price_1NuI0qHhE1I6QTRHEsqusuTB", // This is a test price
-  // 100: "price_1NwNEdHhE1I6QTRHeE6E1Yho",
+  100: "price_1NwNEdHhE1I6QTRHeE6E1Yho",
   150: "price_1NwNFEHhE1I6QTRHrxXmERvU",
   200: "price_1NwNFVHhE1I6QTRHIXwSIQkJ",
   300: "price_1NwNFkHhE1I6QTRHsQXXFsRh",
@@ -30,6 +29,10 @@ export default async function handler(
   if (req.method == "OPTIONS") {
     return res.status(202).json({});
   }
+  // const prices = await stripe.prices.list({
+  //   limit: 100,
+  // })
+  // return res.status(200).json(prices);
 
   const data = req.body as PaymentRequestBody;
 

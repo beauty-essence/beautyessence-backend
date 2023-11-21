@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { SMTPClient } from "emailjs";
-import emailjs from "@emailjs/browser"
+import emailjs from "@emailjs/nodejs"
 
 const client = new SMTPClient({
   user: "vouchery@beauty-essence.pl",
@@ -16,8 +16,7 @@ export default async function handler(
   const data = req.body;
 
   const variant = data?.data?.object?.amount_total / 100 || 100;
-  const voucherName =
-    data?.data?.object?.custom_fields?.find(
+  const voucherName =data?.data?.object?.custom_fields?.find(
       (field: any) => field.key === "voucherName"
     ).text.value ?? "";
   const voucherEmail =
@@ -26,50 +25,20 @@ export default async function handler(
     ).text.value ?? "";
   const customerEmail = data?.data?.object?.customer_details?.email ?? "";
 
-//   try {
-//     const message = await client.sendAsync({
-//       text: `Cześć, ${voucherName}!
-
-// Właśnie otrzymałeś voucher o wartości ${variant}PLN do Beauty Essence!
-
-// Podziękuj ${customerEmail} za ten wspaniały prezent!
-
-// Wystarczy, że podasz swoje imię i nazwisko przy najbliższej wizycie, aby wykorzystać zakupiony voucher.`,
-//       from: "vouchery@beauty-essence.pl",
-//       to: voucherEmail,
-//       cc: customerEmail,
-//       subject: `Twój nowy voucher Beauty Essence`,
-//     });
-//     console.log(message);
-//   }
-try {
-//   const message = await client.sendAsync({
-//     text: `Cześć, ${voucherName}!
-
-// Właśnie otrzymałeś voucher o wartości ${variant}PLN do Beauty Essence!
-
-// Podziękuj ${customerEmail} za ten wspaniały prezent!
-
-// Wystarczy, że podasz swoje imię i nazwisko przy najbliższej wizycie, aby wykorzystać zakupiony voucher.`,
-//     from: "vouchery@beauty-essence.pl",
-//     to: voucherEmail,
-//     cc: customerEmail,
-//     subject: `Twój nowy voucher Beauty Essence`,
-//   });
-  // console.log(message);
-
-  const message = await emailjs.send(`${process.env.EMAIL_SERVICE_ID}`, `${process.env.EMAIL_TEMPLATE_ID}`, {
-    voucherName: voucherName,
-    variant: variant,
-    customerEmail: customerEmail,
-    voucherEmail: voucherEmail,
-  }).then(function(response) {
-    console.log('SUCCESS!', response.status, response.text);
- }, function(error) {
-    console.log('FAILED...', error);
- })
-}
-   catch (err) {
+  try {
+    const message = await emailjs.send("service_buv3hy1", "template_iz141u5", {
+      voucherName: voucherName,
+      variant: variant,
+      customerEmail: customerEmail,
+      voucherEmail: voucherEmail,
+    }, {
+      publicKey: "QWf0KsTI8rrabdJiX",
+      privateKey: "dMtvnzX8Sh0GFMJvk_yeI"
+    }).then(function(response) {
+      console.log('SUCCESS!', response.status);
+  })
+    console.log(message);
+  } catch (err) {
     console.error(err);
   }
 
