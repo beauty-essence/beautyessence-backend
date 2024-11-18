@@ -1,4 +1,5 @@
-import puppeteer from 'puppeteer';
+import chromium from '@sparticuz/chromium';
+import puppeteer from 'puppeteer-core';
 import fs from 'fs';
 import path from 'path';
 import moment from 'moment';
@@ -27,14 +28,30 @@ function createRandomString(length: number) {
 
 
 export const generatePdf = async (variant: number) => {
-  const browser = await puppeteer.launch();
+  console.log('generatePdf::', await chromium.executablePath());
+  const isLocal = process.env.ENVIROMENT === 'local';
+
+  const browser = isLocal
+    // if we are running locally, use the puppeteer that is installed in the node_modules folder
+    ? await require('puppeteer').launch()
+    // if we are running in AWS, download and use a compatible version of chromium at runtime
+    : await puppeteer.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(
+        'https://github.com/Sparticuz/chromium/releases/download/v119.0.2/chromium-v119.0.2-pack.tar',
+      ),
+      headless: chromium.headless,
+    });
+  console.log('browser is up', browser);
+
   const page = await browser.newPage();
   const currentDate = moment().add(3, 'months').format("DD/MM/YYYY");
   const today = moment().format("DD/MM/YYYY").split('/');
   const voucherNumber = `${today[2].slice(2)}${today[1]}${today[0]}/${createRandomString(4)}`
   const url = `${process.env.HOST_URL}/voucher.jpeg`
 
-  // Create HTML
+  //Create HTML
   await page.setContent(`
       <html>
         <body>
@@ -47,8 +64,8 @@ export const generatePdf = async (variant: number) => {
       </html>
     `);
 
-  // Generate PDF and save to buffer
-  const pdfBuffer = await page.pdf({ format: "A5", printBackground: true });
+  //Generate PDF and save to buffer
+  const pdfBuffer = await page.pdf({ format: "a5", printBackground: true });
 
   await browser.close();
 

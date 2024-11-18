@@ -11,10 +11,11 @@
   "dependencies": {
     "@emailjs/browser": "^3.11.0",
     "@emailjs/nodejs": "^2.2.0",
+    "@sparticuz/chromium": "109.0.5",
     "emailjs": "^4.0.3",
     "moment": "^2.30.1",
     "next": "latest",
-    "puppeteer": "^23.8.0",
+    "puppeteer-core": "19.4",
     "react": "latest",
     "react-dom": "latest",
     "stripe": "^13.8.0"
@@ -25,6 +26,7 @@
     "@types/react-dom": "latest",
     "eslint": "latest",
     "eslint-config-next": "latest",
+    "puppeteer": "23.8.0",
     "typescript": "latest"
   }
 }
