@@ -30,6 +30,8 @@ function createRandomString(length: number) {
 export const generatePdf = async (variant: number) => {
   console.log('generatePdf::', await chromium.executablePath());
   const isLocal = process.env.ENVIROMENT === 'local';
+  console.log('isLocal::', isLocal);
+  console.log('process.env.ENVIROMENT::', process.env.ENVIROMENT);
 
   const browser = isLocal
     // if we are running locally, use the puppeteer that is installed in the node_modules folder
