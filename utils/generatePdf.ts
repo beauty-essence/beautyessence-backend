@@ -48,7 +48,7 @@ export const generatePdf = async (variant: number) => {
   const currentDate = moment().add(3, 'months').format("DD/MM/YYYY");
   const today = moment().format("DD/MM/YYYY").split('/');
   const voucherNumber = `${today[2].slice(2)}${today[1]}${today[0]}/${createRandomString(4)}`
-  const url = `${process.env.HOST_URL}/voucher.jpeg`
+  const url = `${process.env.HOST_URL}voucher.jpeg`
   console.log('url::', url);
 
   //Create HTML
