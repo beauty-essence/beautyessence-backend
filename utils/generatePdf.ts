@@ -72,21 +72,23 @@ export const generatePdf = async (variant: number) => {
 
   await browser.close();
 
-  // Path to save PDF ('public/pdfs')
-  const filePath = path.join(process.cwd(), "public", "pdfs", "generated.pdf");
-
-  // Make sure the directory exists (if not, create it)
-  const dir = path.dirname(filePath);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-
   // Define the MIME type for PDF
   const mimeType = 'application/pdf';
   const pdfBase64 = uint8ArrayToBase64(pdfBuffer);
 
-  // Save PDF
-  //fs.writeFileSync(filePath, pdfBuffer);
+  if(isLocal) {
+    // Path to save PDF ('public/pdfs')
+    const filePath = path.join(process.cwd(), "public", "pdfs", "generated.pdf");
+
+    // Make sure the directory exists (if not, create it)
+    const dir = path.dirname(filePath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
+    // Save PDF
+    fs.writeFileSync(filePath, pdfBuffer);
+  }
 
   return `data:${mimeType};base64,${pdfBase64}`;
 }
