@@ -19,12 +19,12 @@ export default async function handler(
   const variant = data?.data?.object?.amount_total / 100 || 100;
   const voucherName =data?.data?.object?.custom_fields?.find(
       (field: any) => field.key === "voucherName"
-    ).text.value ?? "";
+    ).text.value ?? "Joanna Rogalska";
   const voucherEmail =
     data?.data?.object?.custom_fields?.find(
       (field: any) => field.key === "voucherEmail"
-    ).text.value ?? "";
-  const customerEmail = data?.data?.object?.customer_details?.email ?? "";
+    ).text.value ?? "rogalska.joasia@gmail.com";
+  const customerEmail = data?.data?.object?.customer_details?.email ?? "joannarogalska@vp.pl";
 
   try {
     const pdfFile = await generatePdf(variant);
