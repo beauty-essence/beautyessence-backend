@@ -29,19 +29,19 @@ export default async function handler(
   try {
     const pdfFile = await generatePdf(variant);
     console.log('pdfFile::', pdfFile);
-  //   const message = await emailjs.send("service_buv3hy1", "template_iz141u5", {
-  //     voucherName: voucherName,
-  //     variant: variant,
-  //     customerEmail: customerEmail,
-  //     voucherEmail: voucherEmail,
-  //     voucherFile: pdfFile,
-  //   }, {
-  //     publicKey: "QWf0KsTI8rrabdJiX",
-  //     privateKey: "dMtvnzX8Sh0GFMJvk_yeI"
-  //   }).then(function(response) {
-  //     console.log('SUCCESS!', response.status);
-  // })
-  //   console.log(message);
+    const message = await emailjs.send("service_buv3hy1", "template_iz141u5", {
+      voucherName: voucherName,
+      variant: variant,
+      customerEmail: customerEmail,
+      voucherEmail: voucherEmail,
+      voucherFile: pdfFile,
+    }, {
+      publicKey: "QWf0KsTI8rrabdJiX",
+      privateKey: "dMtvnzX8Sh0GFMJvk_yeI"
+    }).then(function(response) {
+      console.log('SUCCESS!', response.status);
+  })
+    console.log(message);
   } catch (err) {
     console.error(err);
   }
