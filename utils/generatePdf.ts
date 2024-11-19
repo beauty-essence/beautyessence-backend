@@ -28,10 +28,7 @@ function createRandomString(length: number) {
 
 
 export const generatePdf = async (variant: number) => {
-  console.log('generatePdf::', await chromium.executablePath());
   const isLocal = process.env.ENVIROMENT === 'local';
-  console.log('isLocal::', isLocal);
-  console.log('process.env.ENVIROMENT::', process.env.ENVIROMENT);
 
   const browser = isLocal
     // if we are running locally, use the puppeteer that is installed in the node_modules folder
@@ -46,13 +43,13 @@ export const generatePdf = async (variant: number) => {
       ),
       headless: chromium.headless,
     });
-  console.log('browser is up', browser);
 
   const page = await browser.newPage();
   const currentDate = moment().add(3, 'months').format("DD/MM/YYYY");
   const today = moment().format("DD/MM/YYYY").split('/');
   const voucherNumber = `${today[2].slice(2)}${today[1]}${today[0]}/${createRandomString(4)}`
   const url = `${process.env.HOST_URL}/voucher.jpeg`
+  console.log('url::', url);
 
   //Create HTML
   await page.setContent(`
