@@ -70,7 +70,7 @@ export const generatePdf = async (variant: number) => {
   await browser.close();
 
   // Define the MIME type for PDF
-  const mimeType = 'application/pdf';
+  const mimeType = 'application/pdf;base64';
   const pdfBase64 = uint8ArrayToBase64(pdfBuffer);
 
   if(isLocal) {
