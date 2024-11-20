@@ -35,12 +35,9 @@ export const generatePdf = async (variant: number) => {
     ? await require('puppeteer').launch()
     // if we are running in AWS, download and use a compatible version of chromium at runtime
     : await puppeteer.launch({
-      ignoreDefaultArgs: ['--disable-extensions'],
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(
-        'https://github.com/Sparticuz/chromium/releases/download/v119.0.2/chromium-v119.0.2-pack.tar',
-      ),
+      executablePath:await chromium.executablePath(),
       headless: chromium.headless,
     });
 
