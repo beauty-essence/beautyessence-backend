@@ -46,5 +46,5 @@ export default async function handler(
     console.error(err);
   }
 
-  return res.status(200).json({ tak: "Successful!!!" });
+  return res.status(200).json({ tak: "Successful!" });
 }
