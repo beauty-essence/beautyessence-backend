@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { SMTPClient } from "emailjs";
 import emailjs from "@emailjs/nodejs"
+import { generatePdf } from '@/utils/generatePdf';
 
 const client = new SMTPClient({
   user: "vouchery@beauty-essence.pl",
@@ -26,11 +27,14 @@ export default async function handler(
   const customerEmail = data?.data?.object?.customer_details?.email ?? "";
 
   try {
+    const pdfFile = await generatePdf(variant);
+
     const message = await emailjs.send("service_buv3hy1", "template_iz141u5", {
       voucherName: voucherName,
       variant: variant,
       customerEmail: customerEmail,
       voucherEmail: voucherEmail,
+      voucherFile: pdfFile,
     }, {
       publicKey: "QWf0KsTI8rrabdJiX",
       privateKey: "dMtvnzX8Sh0GFMJvk_yeI"
@@ -42,5 +46,5 @@ export default async function handler(
     console.error(err);
   }
 
-  return res.status(200).json({ tak: "xd" });
+  return res.status(200).json({ tak: "Successful!" });
 }
