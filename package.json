@@ -16,7 +16,6 @@
     "jspdf": "^2.5.2",
     "moment": "^2.30.1",
     "next": "latest",
-    "pdfkit": "^0.15.1",
     "react": "latest",
     "react-dom": "latest",
     "stripe": "^13.8.0"
