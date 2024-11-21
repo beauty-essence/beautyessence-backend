@@ -26,20 +26,20 @@ export const generatePdf = async (variant: number) => {
 
   doc.addImage(imageBg, 'JPEG', 0, 0, 210, 297);
 
-  // Dodaj treść PDF
-  doc.addFileToVFS('CormorantGaramond-Bold-bold.ttf', customFont);
-  doc.addFont('CormorantGaramond-Bold-bold.ttf', 'CormorantGaramond-Bold', 'bold');
+  // Add text for PDF
+  doc.addFileToVFS('CormorantGaramond-Bold.ttf', customFont);
+  doc.addFont('CormorantGaramond-Bold.ttf', 'CormorantGaramond-Bold', 'normal');
   doc.setFont('CormorantGaramond-Bold')
 
   doc.setTextColor(34, 34, 34);
   doc.setFontSize(40);
-  doc.text(`${variant} PLN`, 85, 140);
+  doc.text(`${variant} zł`, 85, 140);
   doc.setFontSize(12);
-  doc.text(expiredDate, 39, 233);
+  doc.text(expiredDate, 41, 233);
   doc.setFontSize(12);
-  doc.text(voucherNumber, 144, 233);
+  doc.text(voucherNumber, 147, 233);
 
-  // Wygeneruj PDF jako Base64
+  // Generate PDF as Base64
   const base64 = doc.output('datauristring').split(',')[1]; // Pobierz samą zawartość Base64
   const pdfBuffer = Buffer.from(base64, 'base64');
 
