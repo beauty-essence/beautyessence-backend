@@ -3,17 +3,7 @@ import path from 'path';
 import moment from 'moment';
 import { jsPDF } from 'jspdf';
 import { imageBg } from '@/utils/imageBg';
-
-function uint8ArrayToBase64(uint8Array: Uint8Array) {
-  // Convert Uint8Array to a string
-  let binaryString = '';
-  for (let i = 0; i < uint8Array.length; i++) {
-    binaryString += String.fromCharCode(uint8Array[i]);
-  }
-
-  // Encode the string to base64
-  return btoa(binaryString);
-}
+import { customFont } from '@/public/fonts/CormorantGaramond-Bold';
 
 function createRandomString(length: number) {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -26,47 +16,35 @@ function createRandomString(length: number) {
   return result;
 }
 
-
 export const generatePdf = async (variant: number) => {
   const isLocal = process.env.ENVIROMENT === 'local';
-  console.log('isLocal::', isLocal);
-  const doc = new jsPDF();
 
-  doc.addImage(imageBg, 'JPEG', 15, 40, 180, 160);
+  const doc = new jsPDF('p', 'mm', [210, 297]);
+  const expiredDate = moment().add(3, 'months').format("DD/MM/YYYY");
+  const today = moment().format("DD/MM/YYYY").split('/');
+  const voucherNumber = `${today[2].slice(2)}${today[1]}${today[0]}/${createRandomString(4)}`
+
+  doc.addImage(imageBg, 'JPEG', 0, 0, 210, 297);
 
   // Dodaj treść PDF
-  doc.setFontSize(16);
-  doc.text('Hello, this is a Base64 PDF!', 10, 10);
+  doc.addFileToVFS('CormorantGaramond-Bold-bold.ttf', customFont);
+  doc.addFont('CormorantGaramond-Bold-bold.ttf', 'CormorantGaramond-Bold', 'bold');
+  doc.setFont('CormorantGaramond-Bold')
+
+  doc.setTextColor(34, 34, 34);
+  doc.setFontSize(40);
+  doc.text(`${variant} PLN`, 85, 140);
+  doc.setFontSize(12);
+  doc.text(expiredDate, 39, 233);
+  doc.setFontSize(12);
+  doc.text(voucherNumber, 144, 233);
 
   // Wygeneruj PDF jako Base64
   const base64 = doc.output('datauristring').split(',')[1]; // Pobierz samą zawartość Base64
-
   const pdfBuffer = Buffer.from(base64, 'base64');
-
-  // const page = await browser.newPage();
-  // const currentDate = moment().add(3, 'months').format("DD/MM/YYYY");
-  // const today = moment().format("DD/MM/YYYY").split('/');
-  // const voucherNumber = `${today[2].slice(2)}${today[1]}${today[0]}/${createRandomString(4)}`
-  // const url = `${process.env.HOST_URL}voucher.jpeg`
-  // console.log('url::', url);
-
-  //Create HTML
-  // await page.setContent(`
-  //     <html>
-  //       <body>
-  //       <div style="background-image: url(${url}); background-repeat: no-repeat; width: 3460px; height: 1165px; background-size: contain; position: relative">
-  //       <p style="position: absolute; top: 470px; left: 370px; color: #222222; font-size: 40px; font-family: 'sans-serif'">${variant} zł</p>
-  //       <p style="position: absolute; top: 880px; left: 156px; color: #222222; font-size: 18px; font-family: 'sans-serif'">${currentDate}</p>
-  //       <p style="position: absolute; top: 880px; left: 567px; color: #222222; font-size: 18px; font-family: 'sans-serif'">${voucherNumber}</p>
-  //       </div>
-  //       </body>
-  //     </html>
-  //   `);
-  //
 
   // Define the MIME type for PDF
   const mimeType = 'application/pdf';
-  //console.log('base64::', base64)
 
   if(isLocal) {
     // Path to save PDF ('public/pdfs')

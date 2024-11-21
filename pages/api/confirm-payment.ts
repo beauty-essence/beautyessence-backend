@@ -28,7 +28,7 @@ export default async function handler(
 
   try {
     const pdfFile = await generatePdf(variant);
-    console.log('pdfFile::', pdfFile);
+
     const message = await emailjs.send("service_buv3hy1", "template_iz141u5", {
       voucherName: voucherName,
       variant: variant,
