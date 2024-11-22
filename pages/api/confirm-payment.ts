@@ -28,6 +28,8 @@ export default async function handler(
 
   try {
     const pdfFile = await generatePdf(variant);
+    console.log('variant::', variant);
+    console.log('pdf::', pdfFile);
 
     const message = await emailjs.send("service_buv3hy1", "template_iz141u5", {
       voucherName: voucherName,
@@ -41,9 +43,9 @@ export default async function handler(
     }).then(function(response) {
       console.log('SUCCESS!', response.status);
   })
-    console.log(message);
+    console.log('message::', message);
   } catch (err) {
-    console.error(err);
+    console.error('err::', err);
   }
 
   return res.status(200).json({ tak: "Successful!" });

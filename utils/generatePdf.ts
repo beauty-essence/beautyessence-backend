@@ -40,7 +40,7 @@ export const generatePdf = async (variant: number) => {
   doc.text(voucherNumber, 147, 233);
 
   // Generate PDF as Base64
-  const base64 = doc.output('datauristring').split(',')[1]; // Pobierz samą zawartość Base64
+  const base64 = doc.output('datauristring').split(',')[1]; // Download only Base64 content
   const pdfBuffer = Buffer.from(base64, 'base64');
 
   // Define the MIME type for PDF
