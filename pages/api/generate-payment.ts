@@ -20,62 +20,89 @@ const VARIANTS_PRICES: VARIANTS_PRICES = {
 
 interface PaymentRequestBody {
   variant: number;
+  duration: number;
+  slug: string;
+  productName: string;
 }
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  if (req.method == "OPTIONS") {
-    return res.status(202).json({});
-  }
-  // const prices = await stripe.prices.list({
-  //   limit: 100,
-  // })
-  // return res.status(200).json(prices);
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method === "OPTIONS") return res.status(202).json({});
 
-  const data = req.body as PaymentRequestBody;
+  const { slug, duration, variant, productName } = req.body;
 
-  if (!data) {
-    return res
-      .status(400)
-      .json({ error: "Data is required in the request body." });
-  }
+  try {
+    let price;
+    let productTitle;
 
-  const variantPrice = VARIANTS_PRICES[data.variant];
+    if(variant) {
+      const data = req.body as PaymentRequestBody;
 
-  if (!variantPrice) {
-    return res.status(400).json({ error: "Invalid variant." });
-  }
+      const variantPrice = VARIANTS_PRICES[data.variant];
 
-  const payment = await stripe.paymentLinks.create({
-    currency: "pln",
-    line_items: [{ price: variantPrice, quantity: 1 }],
-    after_completion: {
-      type: "redirect",
-      redirect: {
-        url: "https://beauty-essence.pl/voucher/",
-      },
-    },
-    custom_fields: [
-      {
-        key: "voucherName",
-        label: {
-          custom: "Kto otrzyma voucher?",
-          type: "custom",
+      if (!variantPrice) {
+        return res.status(400).json({error: "Invalid variant."});
+      }
+
+      price = await stripe.prices.retrieve(variantPrice);
+    } else if(slug && duration) {
+      // get all products and find this with slug
+      const products = await stripe.products.list({ active: true, limit: 100 });
+      const product = products.data.find(p => p.metadata.slug === slug);
+      productTitle = productName;
+
+      if (!product) {
+        return res.status(404).json({ error: "Product not found" });
+      }
+
+      // get price of product
+      const prices = await stripe.prices.list({ product: product.id, active: true });
+
+      // find the price based on duration (stored as metadata.duration)
+      price = prices.data.find(
+        p => p.metadata?.duration && parseInt(p.metadata.duration) === duration
+      );
+
+      if (!price) {
+        return res.status(404).json({ error: "Matching price not found" });
+      }
+
+    }
+
+    if (!price) {
+      return res.status(400).json({ error: "Price is null or undefined" });
+    }
+
+    // create link for payment
+    const payment = await stripe.paymentLinks.create({
+      line_items: [{ price: price.id as string, quantity: 1 }],
+      after_completion: {
+        type: "redirect",
+        redirect: {
+          url: "https://beauty-essence.pl/voucher/",
         },
-        type: "text",
       },
-      {
-        key: "voucherEmail",
-        label: {
-          custom: "Na jaki adres email wysłać voucher?",
-          type: "custom",
+      metadata: {
+        productName: productTitle,
+        duration: duration,
+      },
+      custom_fields: [
+        {
+          key: "voucherName",
+          label: { custom: "Kto otrzyma voucher?", type: "custom" },
+          type: "text",
         },
-        type: "text",
-      },
-    ],
-  });
+        {
+          key: "voucherEmail",
+          label: { custom: "Na jaki adres email wysłać voucher?", type: "custom" },
+          type: "text",
+        },
+      ],
+    });
 
-  return res.status(200).json(payment);
+    return res.status(200).json(payment);
+
+  } catch (error) {
+    console.error("Stripe error:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
 }
