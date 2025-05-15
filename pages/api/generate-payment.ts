@@ -31,7 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { slug, duration, variant, productName } = req.body;
 
   try {
-    let price = null;
+    let price;
     let productTitle;
 
     if(variant) {
@@ -68,9 +68,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     }
 
+    if (!price) {
+      return res.status(400).json({ error: "Price is null or undefined" });
+    }
+
     // create link for payment
     const payment = await stripe.paymentLinks.create({
-      line_items: [{ price: price.id, quantity: 1 }],
+      line_items: [{ price: price.id as string, quantity: 1 }],
       after_completion: {
         type: "redirect",
         redirect: {
