@@ -15,8 +15,9 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const data = req.body;
-
   const variant = data?.data?.object?.amount_total / 100 || 100;
+  const productName = data?.data?.object?.metadata.productName;
+  const duration = data?.data?.object?.metadata.duration;
   const voucherName =data?.data?.object?.custom_fields?.find(
       (field: any) => field.key === "voucherName"
     ).text.value ?? "";
@@ -25,11 +26,10 @@ export default async function handler(
       (field: any) => field.key === "voucherEmail"
     ).text.value ?? "";
   const customerEmail = data?.data?.object?.customer_details?.email ?? "";
+  console.log('data::', data?.data?.object);
 
   try {
-    const pdfFile = await generatePdf(variant);
-    console.log('variant::', variant);
-    console.log('pdf::', pdfFile);
+    const pdfFile = await generatePdf(variant, productName, duration);
 
     const message = await emailjs.send("service_buv3hy1", "template_iz141u5", {
       voucherName: voucherName,

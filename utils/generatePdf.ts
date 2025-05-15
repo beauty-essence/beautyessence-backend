@@ -16,24 +16,29 @@ function createRandomString(length: number) {
   return result;
 }
 
-export const generatePdf = async (variant: number) => {
+export const generatePdf = async (variant: number, productName?: string, duration?: number) => {
   const isLocal = process.env.ENVIROMENT === 'local';
 
   const doc = new jsPDF('p', 'mm', [210, 297]);
   const expiredDate = moment().add(3, 'months').format("DD/MM/YYYY");
   const today = moment().format("DD/MM/YYYY").split('/');
   const voucherNumber = `${today[2].slice(2)}${today[1]}${today[0]}/${createRandomString(4)}`
+  const voucherTitle = productName ? `${productName} - ${duration} min` : `${variant} zł`;
 
   doc.addImage(imageBg, 'JPEG', 0, 0, 210, 297);
 
   // Add text for PDF
   doc.addFileToVFS('CormorantGaramond-Bold.ttf', customFont);
   doc.addFont('CormorantGaramond-Bold.ttf', 'CormorantGaramond-Bold', 'normal');
-  doc.setFont('CormorantGaramond-Bold')
+  doc.setFont('CormorantGaramond-Bold');
+
+  //page width
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const positionX = pageWidth / 2;
 
   doc.setTextColor(34, 34, 34);
-  doc.setFontSize(40);
-  doc.text(`${variant} zł`, 85, 140);
+  doc.setFontSize(28);
+  doc.text(voucherTitle, positionX, 148, { align: 'center' });
   doc.setFontSize(12);
   doc.text(expiredDate, 41, 233);
   doc.setFontSize(12);
