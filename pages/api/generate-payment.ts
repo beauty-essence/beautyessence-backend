@@ -31,7 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { slug, duration, variant, productName } = req.body;
 
   try {
-    let price;
+    let price = null;
     let productTitle;
 
     if(variant) {
