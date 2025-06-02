@@ -23,7 +23,7 @@ export const generatePdf = async (variant: number, productName?: string, duratio
   const expiredDate = moment().add(3, 'months').format("DD/MM/YYYY");
   const today = moment().format("DD/MM/YYYY").split('/');
   const voucherNumber = `${today[2].slice(2)}${today[1]}${today[0]}/${createRandomString(4)}`
-  const voucherTitle = productName ? `${productName} - ${duration} min` : `${variant} zł`;
+  const voucherTitle = duration ? `${productName} - ${duration} min` : `${variant} zł`;
 
   doc.addImage(imageBg, 'JPEG', 0, 0, 210, 297);
 
