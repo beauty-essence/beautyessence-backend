@@ -26,6 +26,7 @@ export default async function handler(
       (field: any) => field.key === "voucherEmail"
     ).text.value ?? "";
   const customerEmail = data?.data?.object?.customer_details?.email ?? "";
+  console.log('data::', data)
 
   try {
     const pdfFile = await generatePdf(variant, productName, duration);
