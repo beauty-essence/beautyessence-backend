@@ -15,7 +15,13 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const data = req.body;
-  const variant = data?.data?.object?.amount_total / 100 || 100;
+  let variant;
+  if(data?.data?.object?.amount_subtotal > data?.data?.object?.amount_total){
+    variant = data?.data?.object?.amount_subtotal / 100 || 100
+  } else {
+    variant = data?.data?.object?.amount_total / 100 || 100
+  }
+
   const productName = data?.data?.object?.metadata.productName;
   const duration = data?.data?.object?.metadata.duration;
   const voucherName =data?.data?.object?.custom_fields?.find(
