@@ -17,9 +17,9 @@ export default async function handler(
   const data = req.body;
   let variant;
   if(data?.data?.object?.amount_subtotal > data?.data?.object?.amount_total){
-    variant = data?.data?.object?.amount_subtotal / 100 || 100
+    variant = data?.data?.object?.amount_subtotal / 100 || 100; //original price without discount
   } else {
-    variant = data?.data?.object?.amount_total / 100 || 100
+    variant = data?.data?.object?.amount_total / 100 || 100;
   }
 
   const productName = data?.data?.object?.metadata.productName;

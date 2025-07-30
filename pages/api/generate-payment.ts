@@ -59,8 +59,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           p => p.metadata?.duration && parseInt(p.metadata.duration) === duration
         );
       } else {
-        price = prices.data[0];
-      }
+        price = prices.data[0]; // Default to the first price if no duration is specified
 
       if (!price) {
         return res.status(404).json({ error: "Price not found" });
