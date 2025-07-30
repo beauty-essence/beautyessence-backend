@@ -10,13 +10,12 @@ interface VARIANTS_PRICES {
 }
 // 100: "price_1NuI0qHhE1I6QTRHEsqusuTB", // This is a test price
 const VARIANTS_PRICES: VARIANTS_PRICES = {
-  100: "price_1NuI0qHhE1I6QTRHEsqusuTB",
-  // 100: "price_1NwNEdHhE1I6QTRHeE6E1Yho",
-  // 150: "price_1NwNFEHhE1I6QTRHrxXmERvU",
-  // 200: "price_1NwNFVHhE1I6QTRHIXwSIQkJ",
-  // 300: "price_1NwNFkHhE1I6QTRHsQXXFsRh",
-  // 500: "price_1NwNG0HhE1I6QTRHZyhzmADn",
-  // 1000: "price_1NwNGJHhE1I6QTRHWBze6pzC",
+  100: "price_1NwNEdHhE1I6QTRHeE6E1Yho",
+  150: "price_1NwNFEHhE1I6QTRHrxXmERvU",
+  200: "price_1NwNFVHhE1I6QTRHIXwSIQkJ",
+  300: "price_1NwNFkHhE1I6QTRHsQXXFsRh",
+  500: "price_1NwNG0HhE1I6QTRHZyhzmADn",
+  1000: "price_1NwNGJHhE1I6QTRHWBze6pzC",
 };
 
 interface PaymentRequestBody {
@@ -24,16 +23,18 @@ interface PaymentRequestBody {
   duration?: number;
   slug?: string;
   productName?: string;
+  voucherPrice?: string;
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "OPTIONS") return res.status(202).json({});
 
-  const { slug, duration, variant, productName } = req.body as PaymentRequestBody;
+  const { slug, duration, variant, productName, voucherPrice } = req.body as PaymentRequestBody;
 
   try {
     let price;
     let productTitle = productName ?? "";
+    let vPrice = voucherPrice ?? "";
 
     if (variant) {
       const variantPrice = VARIANTS_PRICES[variant];
@@ -75,13 +76,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const metadata: Record<string, string | number> = {
       productName: productTitle,
       slug: slug || "",
+      voucherPrice: vPrice || "",
     };
 
     if (duration && duration > 0) {
       metadata.duration = duration;
     }
-
-    console.log('metadata::', metadata);
 
     const session = await stripe.checkout.sessions.create({
       line_items: [{ price: price.id, quantity: 1 }],
@@ -106,8 +106,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       success_url: "https://beauty-essence.pl/voucher/?success=true",
       cancel_url: "https://beauty-essence.pl/voucher/?cancel=true",
     });
-
-    console.log('session::', session);
 
     return res.status(200).json({ url: session.url });
 
