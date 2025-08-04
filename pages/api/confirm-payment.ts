@@ -15,9 +15,16 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const data = req.body;
-  const variant = data?.data?.object?.amount_total / 100 || 100;
+  let variant;
+  if(data?.data?.object?.amount_subtotal > data?.data?.object?.amount_total){
+    variant = data?.data?.object?.amount_subtotal / 100 || 100; //original price without discount
+  } else {
+    variant = data?.data?.object?.amount_total / 100 || 100;
+  }
+
   const productName = data?.data?.object?.metadata.productName;
   const duration = data?.data?.object?.metadata.duration;
+  const voucherPrice = data?.data?.object?.metadata.voucherPrice;
   const voucherName =data?.data?.object?.custom_fields?.find(
       (field: any) => field.key === "voucherName"
     ).text.value ?? "";
@@ -26,14 +33,13 @@ export default async function handler(
       (field: any) => field.key === "voucherEmail"
     ).text.value ?? "";
   const customerEmail = data?.data?.object?.customer_details?.email ?? "";
-  console.log('data::', data)
 
   try {
-    const pdfFile = await generatePdf(variant, productName, duration);
+    const pdfFile = await generatePdf(variant, productName, duration, voucherPrice);
 
     const message = await emailjs.send("service_buv3hy1", "template_iz141u5", {
       voucherName: voucherName,
-      variant: variant,
+      variant: voucherPrice ? voucherPrice : variant,
       customerEmail: customerEmail,
       voucherEmail: voucherEmail,
       voucherFile: pdfFile,

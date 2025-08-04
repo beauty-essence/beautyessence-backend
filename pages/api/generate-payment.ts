@@ -23,19 +23,20 @@ interface PaymentRequestBody {
   duration?: number;
   slug?: string;
   productName?: string;
+  voucherPrice?: string;
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "OPTIONS") return res.status(202).json({});
 
-  const { slug, duration, variant, productName } = req.body as PaymentRequestBody;
+  const { slug, duration, variant, productName, voucherPrice } = req.body as PaymentRequestBody;
 
   try {
     let price;
     let productTitle = productName ?? "";
+    let vPrice = voucherPrice ?? "";
 
     if (variant) {
-      // Voucher amounts
       const variantPrice = VARIANTS_PRICES[variant];
       if (!variantPrice) {
         return res.status(400).json({ error: "Invalid variant." });
@@ -44,7 +45,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       price = await stripe.prices.retrieve(variantPrice);
       productTitle = `${variant} zł`;
     } else if (slug) {
-      // Vouchers amounts with slug from Shop page
       const products = await stripe.products.list({ active: true, limit: 100 });
       const product = products.data.find(p => p.metadata.slug === slug);
 
@@ -59,7 +59,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           p => p.metadata?.duration && parseInt(p.metadata.duration) === duration
         );
       } else {
-        price = prices.data[0]; // Pierwsza aktywna cena (np. bez duration)
+        price = prices.data[0]; // Default to the first price if no duration is specified
       }
 
       if (!price) {
@@ -75,22 +75,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const metadata: Record<string, string | number> = {
       productName: productTitle,
+      slug: slug || "",
+      voucherPrice: vPrice || "",
     };
 
-    // Vouchers for treatments using slugs and duration time
     if (duration && duration > 0) {
       metadata.duration = duration;
     }
 
-    const payment = await stripe.paymentLinks.create({
-      line_items: [{ price: price.id as string, quantity: 1 }],
-      after_completion: {
-        type: "redirect",
-        redirect: {
-          url: "https://beauty-essence.pl/voucher/",
-        },
-      },
+    const session = await stripe.checkout.sessions.create({
+      line_items: [{ price: price.id, quantity: 1 }],
+      mode: 'payment',
       metadata,
+      payment_intent_data: {
+        metadata, // PaymentIntent
+      },
       custom_fields: [
         {
           key: "voucherName",
@@ -103,9 +102,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           type: "text",
         },
       ],
+      allow_promotion_codes: true,
+      success_url: "https://beauty-essence.pl/voucher/?success=true",
+      cancel_url: "https://beauty-essence.pl/voucher/?cancel=true",
     });
 
-    return res.status(200).json(payment);
+    return res.status(200).json({ url: session.url });
 
   } catch (error) {
     console.error("Stripe error:", error);

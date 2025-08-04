@@ -16,14 +16,16 @@ function createRandomString(length: number) {
   return result;
 }
 
-export const generatePdf = async (variant: number, productName?: string, duration?: number) => {
+export const generatePdf = async (variant: number, productName?: string, duration?: number, voucherPrice?: string) => {
   const isLocal = process.env.ENVIROMENT === 'local';
 
   const doc = new jsPDF('p', 'mm', [210, 297]);
   const expiredDate = moment().add(3, 'months').format("DD/MM/YYYY");
   const today = moment().format("DD/MM/YYYY").split('/');
-  const voucherNumber = `${today[2].slice(2)}${today[1]}${today[0]}/${createRandomString(4)}`
-  const voucherTitle = duration ? `${productName} - ${duration} min` : `${variant} zł`;
+  const voucherNumber = `${today[2].slice(2)}${today[1]}${today[0]}/${createRandomString(4)}`;
+  const price = voucherPrice ? `${voucherPrice} zł` : `${variant} zł`;
+
+  const voucherTitle = duration ? `${productName} - ${duration} min` : price;
 
   doc.addImage(imageBg, 'JPEG', 0, 0, 210, 297);
 
